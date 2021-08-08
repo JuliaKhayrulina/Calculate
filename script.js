@@ -40,14 +40,16 @@ const appData = {
 
     for (let i = 0; i < 2; i++) {
       let numExpense = 0;
-      let valExpense = prompt('Введите обязательную статью расходов?', '');
-      if (valExpense === null) {
-        return false;
-      } else if (valExpense !== '') {
+      let valExpense;
+      do {
+        valExpense = prompt('Введите обязательную статью расходов?', '');
+      } while (isNumber(valExpense) && valExpense !== null);
+
+      if (valExpense) {
         do {
           numExpense = prompt('Во сколько это обойдется?', 0);
           this.expenses[valExpense] = Math.abs(numExpense);
-        } while (!isNumber(numExpense) && !appData.expenses.hasOwnProperty(valExpense));
+        } while (!isNumber(numExpense) || !appData.expenses.hasOwnProperty(valExpense));
       }
     }
   },
@@ -140,8 +142,6 @@ console.log(`Уровень дохода: ${appData.getStatusIncome()}`);
 //   console.log(`Наша программа включает в себя данные: ${key} : ${appData[key]}`);
 // }
 
-// appData.getInfoDeposit();
-// console.log(appData.calcSavedMoney(), appData.percentDeposit, appData.moneyDeposit);
 let str = '';
 
 appData.addExpenses.forEach((item) => {
