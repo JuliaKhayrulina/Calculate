@@ -177,26 +177,3 @@ const inpAddExpenses = document.querySelector('input.additional_expenses-item');
 const inpTargetAmount = document.querySelector('input.target-amount');
 const periodRange = document.querySelector('input.period-select');
 const valBudgetMonth = document.querySelector('input.budget_month-value');
-
-console.log(startBtn);
-console.log(plusIncome);
-console.log(plusExpenses);
-console.log(checkBox);
-console.log(inpAddIncome);
-console.log(
-  valBudgetDay,
-  valExpensesMonth,
-  valAddIncome,
-  valAddExpenses,
-  valIncomePeriod,
-  valTargetMonth
-);
-console.log(salaryAmount);
-console.log(incomeTitle);
-console.log(incomeAmount);
-console.log(expensesTitle);
-console.log(expensesAmount);
-console.log(inpAddExpenses);
-console.log(inpTargetAmount);
-console.log(periodRange);
-console.log(valBudgetMonth);
