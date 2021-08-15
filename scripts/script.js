@@ -45,12 +45,6 @@ const appData = {
   expensesMonth: 0,
   period: 0,
   start() {
-    console.log(this);
-    if (!salaryAmount.value) {
-      alert('Ошибка, поле "Месячный доход" должно быть заполнено!');
-      return;
-    }
-
     this.budget = Math.abs(salaryAmount.value);
     this.getExpenses();
     this.getExpensesMonth();
@@ -64,6 +58,7 @@ const appData = {
   },
   reset() {
     startBtn.disabled = true;
+    inputsAll = document.querySelectorAll('input');
     inputsAll.forEach((item) => {
       item.value = '';
     });
@@ -216,6 +211,8 @@ const appData = {
   blockInputs() {
     resetBtn.style.display = 'block';
     startBtn.style.display = 'none';
+
+    inputsText = data.querySelectorAll('input[type="text"]');
     inputsText.forEach((item) => {
       item.disabled = true;
     });
