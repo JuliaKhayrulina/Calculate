@@ -48,9 +48,8 @@ class AppData {
   start() {
     this.budget = Math.abs(salaryAmount.value);
     this.getExpInc();
+    this.getAddExpInc();
     this.getExpensesMonth();
-    this.getAddExpenses();
-    this.getAddIncome();
     this.getBudget();
     this.getTargetMonth();
     this.showResult();
@@ -156,17 +155,16 @@ class AppData {
     }
   }
 
-  getAddExpenses() {
+  getAddExpInc() {
     let addExpenses = inpAddExpenses.value.split(', ');
+
     addExpenses.forEach((item) => {
       item = item.trim();
       if (item) {
         this.addExpenses.push(item);
       }
     });
-  }
 
-  getAddIncome() {
     inpAddIncome.forEach((item) => {
       let itemValue = item.value.trim();
       if (itemValue) {
@@ -210,7 +208,6 @@ class AppData {
   eventListeners() {
     salaryAmount.addEventListener('input', () => {
       if (salaryAmount.value) {
-        console.log('hd');
         startBtn.disabled = false;
       }
     });
