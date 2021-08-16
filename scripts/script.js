@@ -27,6 +27,8 @@ let resetBtn = document.querySelector('#cancel'),
   expensesItems = document.querySelectorAll('.expenses-items'),
   incomeItems = document.querySelectorAll('.income-items');
 
+startBtn.disabled = true;
+
 class AppData {
   constructor() {
     this.income = {};
@@ -206,8 +208,9 @@ class AppData {
   }
 
   eventListeners() {
-    salaryAmount.addEventListener('input', function () {
+    salaryAmount.addEventListener('input', () => {
       if (salaryAmount.value) {
+        console.log('hd');
         startBtn.disabled = false;
       }
     });
