@@ -321,8 +321,6 @@ class AppData {
     });
 
     let arr = [...new Set(storage, cookies)];
-    console.log(storage);
-    console.log(cookies);
     if (arr.length === storage.length && arr.length === cookies.length) {
       this.start();
     } else {
