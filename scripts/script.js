@@ -38,9 +38,9 @@ class AppData {
   constructor() {
     this.income = {};
     this.incomeMonth = 0;
-    this.addIncome = [];
+    this.additionalIncome = [];
     this.expenses = {};
-    this.addExpenses = [];
+    this.additionalExpenses = [];
     this.deposit = false;
     this.percentDeposit = 0;
     this.moneyDeposit = 0;
@@ -88,9 +88,9 @@ class AppData {
 
     this.income = {};
     this.incomeMonth = 0;
-    this.addIncome = [];
+    this.additionalIncome = [];
     this.expenses = {};
-    this.addExpenses = [];
+    this.additionalExpenses = [];
     this.deposit = false;
     this.percentDeposit = 0;
     this.moneyDeposit = 0;
@@ -100,7 +100,10 @@ class AppData {
     this.expensesMonth = 0;
     this.period = 0;
 
-    this.saveInStorage();
+    const cookies = this.getCookies();
+    cookies.forEach((item) => {
+      this.setCookie(item, '', -1);
+    });
   }
 
   getExpensesMonth() {
@@ -147,7 +150,6 @@ class AppData {
     if (elem.length < 4) {
       localStorage.setItem(getClass, document.querySelector(`.${getClass}`).outerHTML);
     }
-    this.showStorageData();
     this.eventListeners();
     this.checkInputsValidate();
   }
@@ -177,14 +179,14 @@ class AppData {
     addExpenses.forEach((item) => {
       item = item.trim();
       if (item) {
-        this.addExpenses.push(item);
+        this.additionalExpenses.push(item);
       }
     });
 
     inpAddIncome.forEach((item) => {
       let itemValue = item.value.trim();
       if (itemValue) {
-        this.addIncome.push(itemValue);
+        this.additionalIncome.push(itemValue);
       }
     });
   }
@@ -197,8 +199,8 @@ class AppData {
     valBudgetMonth.value = localStorage.budgetMonth;
     valBudgetDay.value = localStorage.budgetDay;
     valExpensesMonth.value = localStorage.expensesMonth;
-    valAddExpenses.value = localStorage.addExpenses;
-    valAddIncome.value = localStorage.addIncome;
+    valAddExpenses.value = localStorage.additionalExpenses;
+    valAddIncome.value = localStorage.additionalIncome;
     valTargetMonth.value = localStorage.targetMonth;
     valIncomePeriod.value = localStorage.incomePeriod;
   }
@@ -255,17 +257,16 @@ class AppData {
     localStorage.budgetMonth = this.budgetMonth;
     localStorage.budgetDay = this.budgetDay;
     localStorage.expensesMonth = this.expensesMonth;
-    localStorage.addExpenses = this.addExpenses.join(', ');
-    localStorage.addIncome = this.addIncome.join(', ');
+    localStorage.additionalExpenses = this.additionalExpenses.join(', ');
+    localStorage.additionalIncome = this.additionalIncome.join(', ');
     localStorage.targetMonth = this.period;
     localStorage.incomePeriod = this.calcPeriod();
-    localStorage.isLoad = 'true';
 
     document.cookie = 'budgetMonth=' + this.budgetMonth;
     document.cookie = 'budgetDay=' + this.budgetDay;
     document.cookie = 'expensesMonth=' + this.expensesMonth;
-    document.cookie = 'addExpenses=' + this.addExpenses.join(', ');
-    document.cookie = 'addIncome=' + this.addIncome.join(', ');
+    document.cookie = 'additionalExpenses=' + this.additionalExpenses.join(', ');
+    document.cookie = 'additionalIncome=' + this.additionalIncome.join(', ');
     document.cookie = 'targetMonth=' + this.period;
     document.cookie = 'incomePeriod=' + this.calcPeriod();
     document.cookie = 'isLoad=true';
@@ -281,9 +282,9 @@ class AppData {
       salaryAmount.parentNode.insertAdjacentHTML('afterend', localStorage.income);
     }
     if (localStorage.expenses) {
-      let addInc = document.querySelector('.additional_income');
+      let addInc = document.querySelector('.additional_expenses');
       document.querySelector('.expenses').remove();
-      addInc.insertAdjacentHTML('afterend', localStorage.expenses);
+      addInc.insertAdjacentHTML('beforeBegin', localStorage.expenses);
     }
 
     data = document.querySelector('.data');
@@ -305,39 +306,66 @@ class AppData {
 
   checkCookiesStorage() {
     const storage = [];
-    const cookies = [];
-    window.getCookie = function (item) {
-      let match = document.cookie.match(new RegExp('(^| )' + item));
-      if (match) {
-        cookies.push(match[0].trim(''));
-      }
-    };
+    const cookies = this.getCookies();
 
     Object.keys(localStorage).filter((item) => {
-      if (isNaN(item) && item !== 'reset' && item !== 'range') {
+      if (
+        isNaN(item) &&
+        item !== 'reset' &&
+        item !== 'range' &&
+        item !== 'income' &&
+        item !== 'expenses'
+      ) {
         storage.push(item);
-        window.getCookie(item);
       }
     });
 
-    let arr = [...new Set(storage, cookies)];
-    if (arr.length === storage.length && arr.length === cookies.length) {
-      this.start();
-    } else {
-      this.reset();
+    const arr = [...new Set(storage, cookies)];
+
+    if (arr.length !== storage.length || arr.length !== cookies.length) {
+      cookies.forEach((item) => {
+        this.setCookie(item, '', -1);
+      });
       localStorage.clear();
+      this.reset();
+    } else {
+      return true;
     }
-    console.log(arr);
+  }
+
+  setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + 24 * 60 * 60 * 1000 * days);
+    console.log(name + '=' + value + ';path=/;expires=' + d.toGMTString());
+    document.cookie = name + '=' + value + ';path=/;expires=' + d.toGMTString();
+  }
+
+  getCookies() {
+    const cookies = [];
+    let dataRight = result.querySelectorAll('input');
+    dataRight.forEach((item) => {
+      const record = item.classList[1].split('-')[0].split('_');
+      const record1 = record[0] + record[1][0].toUpperCase() + record[1].slice(1);
+      const pattern = RegExp(record1 + '=.[^;]*');
+      const matched = document.cookie.match(pattern);
+      if (matched) {
+        cookies.push(matched[0].split('=')[0]);
+      }
+    });
+    return cookies;
   }
 
   eventListeners() {
+    this.showStorageData();
     if (localStorage.reset) {
       startBtn.style.display = 'none';
       resetBtn.style.display = 'block';
       inputsText.forEach((item) => {
         item.disabled = true;
       });
-      this.checkCookiesStorage();
+      if (this.checkCookiesStorage()) {
+        this.showResult();
+      }
     }
 
     result.addEventListener('click', (e) => {
@@ -361,7 +389,6 @@ class AppData {
     });
 
     data.addEventListener('input', (e) => {
-      inputsAll = document.querySelectorAll('input');
       let target = e.target;
       if (target.classList.contains('period-select')) {
         periodAmount.textContent = target.value;
@@ -378,11 +405,9 @@ class AppData {
       }
     });
 
-    inputsText = data.querySelectorAll('input[type="text"]');
     inputsText.forEach((item, index) => {
-      item.addEventListener('blur', (e) => {
+      item.addEventListener('input', (e) => {
         const target = e.target;
-
         localStorage.setItem(index, target.value);
       });
     });
@@ -473,6 +498,5 @@ class AppData {
 
 const appData = new AppData();
 
-appData.showStorageData();
 appData.eventListeners();
 appData.checkInputsValidate();
